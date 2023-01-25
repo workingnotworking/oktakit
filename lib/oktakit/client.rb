@@ -33,7 +33,7 @@ module Oktakit
       builder.adapter(Faraday.default_adapter)
     end
 
-    def initialize(token: nil, access_token: nil, organization: nil, api_endpoint: nil)
+    def initialize(token: nil, access_token: nil, organization: nil, api_endpoint: nil, api_version: 1)
       if organization.nil? && api_endpoint.nil?
         raise ArgumentError, "Please provide either the organization or the api_endpoint argument"
       end
@@ -46,6 +46,7 @@ module Oktakit
       @access_token = access_token
       @organization = organization
       @api_endpoint = api_endpoint
+      @api_version  = api_version
     end
 
     def api_endpoint
@@ -176,7 +177,7 @@ module Oktakit
       options[:headers][:accept] = accept if accept
       options[:headers][:content_type] = content_type if content_type
 
-      uri = URI::DEFAULT_PARSER.escape("/api/v1" + path.to_s)
+      uri = URI::DEFAULT_PARSER.escape("/api/v#{@api_version}" + path.to_s)
       @last_response = resp = sawyer_agent.call(method, uri, data, options)
 
       response = [resp.data, resp.status]
